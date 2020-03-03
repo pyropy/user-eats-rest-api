@@ -9,30 +9,22 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
-@Service("userModelDetailsService")
+@Service
 public class UserModelDetailsService implements UserDetailsService {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserModelDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findUserByUsername(username);
+        User user = userRepository.findUserByUsername(username).orElseThrow(() ->
+                            new UsernameNotFoundException(username));
 
-        if (user.isEmpty()) {
-            throw new UsernameNotFoundException(username);
-        }
-        return new UserModelDetails(user.get());
-    }
-
-    private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
-        if (!user.isActivated()) {
-            // todo: throw exception
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(),
-                user.getAuthorities());
+        return new UserModelDetails(user);
     }
 }

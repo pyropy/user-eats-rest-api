@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +28,6 @@ public class User {
 
     @Column(length = 100, name = "PASSWORD")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Size(min = 6, max = 100)
     private String password;
 
 
@@ -49,16 +47,17 @@ public class User {
     @Column(nullable = false, name = "ACTIVATED")
     private boolean activated;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "USER_ROLE",
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_NAME", referencedColumnName = "NAME")})
     @BatchSize(size = 20)
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
 
-    protected User() {
+    public User() {
     }
 
     public User(String firstName,
@@ -147,7 +146,7 @@ public class User {
     }
 
     public Collection<GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
         roles.forEach(r -> {
             authorities.add(new SimpleGrantedAuthority(r.getName()));

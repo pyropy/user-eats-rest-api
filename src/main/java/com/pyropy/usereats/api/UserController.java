@@ -11,13 +11,13 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
     UserService userService;
 
-    @GetMapping("/all")
+    @GetMapping
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         userService.findAll().forEach(users::add);
