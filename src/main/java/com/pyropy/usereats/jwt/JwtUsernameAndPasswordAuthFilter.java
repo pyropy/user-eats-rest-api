@@ -3,14 +3,13 @@ package com.pyropy.usereats.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pyropy.usereats.config.JwtConfig;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,14 +20,17 @@ import java.util.Date;
 
 public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
 
-    @Autowired
-    private JwtConfig jwtConfig;
     private final AuthenticationManager authenticationManager;
+    private final JwtConfig jwtConfig;
+    private final SecretKey secretKey;
 
-    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager) {
+    public JwtUsernameAndPasswordAuthFilter(AuthenticationManager authenticationManager,
+                                            JwtConfig jwtConfig,
+                                            SecretKey secretKey) {
         this.authenticationManager = authenticationManager;
+        this.jwtConfig = jwtConfig;
+        this.secretKey = secretKey;
     }
-
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
@@ -42,9 +44,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
                     authenticationRequest.getUsername(),
                     authenticationRequest.getPassword()
             );
-
-            Authentication authenticate = authenticationManager.authenticate(authentication);
-            return authenticate;
+            return authenticationManager.authenticate(authentication);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,16 +56,14 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        // todo: add config for token and etc
-        String key = "securekey";
-        String jwtToken = Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(authResult.getName())
                 .claim("authorities", authResult.getAuthorities())
                 .setIssuedAt(new Date())
-                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusWeeks(2)))
-                .signWith(Keys.hmacShaKeyFor(key.getBytes()))
+                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
+                .signWith(secretKey)
                 .compact();
 
-        response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + jwtToken);
+        response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
     }
 }
