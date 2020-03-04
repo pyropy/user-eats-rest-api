@@ -30,8 +30,8 @@ public class UserController {
     }
 
     @GetMapping("{username}")
-    public Optional<User> getUserByUsername(@PathVariable("username") String username) {
-        return userService.findUserByUsername(username);
+    public User getUserByUsername(@PathVariable("username") String username) {
+        return userService.findByUsername(username);
     }
 
     @PostMapping

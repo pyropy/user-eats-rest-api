@@ -2,6 +2,7 @@ package com.pyropy.usereats.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pyropy.usereats.config.JwtConfig;
+import com.pyropy.usereats.model.UserModelDetails;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
@@ -35,20 +37,18 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
-
         try {
+
             UsernamePasswordAuthRequest authenticationRequest = new ObjectMapper()
                     .readValue(request.getInputStream(), UsernamePasswordAuthRequest.class);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     authenticationRequest.getUsername(),
-                    authenticationRequest.getPassword()
-            );
+                    authenticationRequest.getPassword());
             return authenticationManager.authenticate(authentication);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override

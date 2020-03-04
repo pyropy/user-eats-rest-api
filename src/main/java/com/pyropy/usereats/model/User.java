@@ -7,10 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "USER")
@@ -54,7 +51,7 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "ROLE_NAME", referencedColumnName = "NAME")})
     @BatchSize(size = 20)
     @JsonIgnore
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
 
 
     public User() {
@@ -137,23 +134,20 @@ public class User {
         this.activated = activated;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
     public Collection<GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-
+        List<GrantedAuthority> authorities = new ArrayList<>();
         roles.forEach(r -> {
             authorities.add(new SimpleGrantedAuthority(r.getName()));
         });
-
         return authorities;
-
     }
 
 }

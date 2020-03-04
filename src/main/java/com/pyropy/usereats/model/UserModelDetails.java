@@ -30,17 +30,17 @@ public class UserModelDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return user.isActivated();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.isActivated();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
