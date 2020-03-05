@@ -1,6 +1,6 @@
 # User Eats REST API
 
-**REST API for resturaunt example app.**
+**REST API for food ordering example app.**
 
 ## Getting Started
 
