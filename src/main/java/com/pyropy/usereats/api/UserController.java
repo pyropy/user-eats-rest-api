@@ -1,5 +1,6 @@
 package com.pyropy.usereats.api;
 
+import com.pyropy.usereats.model.Role;
 import com.pyropy.usereats.model.User;
 import com.pyropy.usereats.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,12 @@ public class UserController {
         return userService.findByUsername(username);
     }
 
+    /*
+     *
+     */
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public User createUser(@RequestBody User user, @RequestParam(required = false) final boolean isRestaurantAdmin) {
+        if (isRestaurantAdmin) userService.setResturantAdminRole(user);
         return userService.save(user);
     }
 }

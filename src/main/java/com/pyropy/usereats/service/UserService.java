@@ -1,11 +1,15 @@
 package com.pyropy.usereats.service;
 
+import com.pyropy.usereats.model.Role;
 import com.pyropy.usereats.model.User;
+import com.pyropy.usereats.repository.RoleRepository;
 import com.pyropy.usereats.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -14,12 +18,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
 
@@ -29,7 +35,7 @@ public class UserService {
     public User save(User user) {
         return userRepository.save(new User(user.getFirstName(), user.getLastName(),
                                 user.getAddress(), passwordEncoder.encode(user.getPassword()),
-                                user.getEmail(), user.getUsername()));
+                                user.getEmail(), user.getUsername(), user.getRoles()));
     }
 
     public User findByUsername(String username) {
@@ -43,4 +49,9 @@ public class UserService {
     public Iterable<User> findAll() {
         return userRepository.findAll();
     }
+    public User setResturantAdminRole(User user) {
+        user.setRoles(Arrays.asList(roleRepository.findRoleByName("ROLE_RESTURAUNT_ADMIN")));
+        return user;
+    }
+
 }

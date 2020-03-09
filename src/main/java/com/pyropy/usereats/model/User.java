@@ -62,7 +62,8 @@ public class User {
                 String address,
                 String password,
                 String email,
-                String username) {
+                String username,
+                List<Role> roles) {
         this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -70,6 +71,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.username = username;
+        this.roles = roles;
         this.activated = true; // todo: implement email confirmation
     }
 
