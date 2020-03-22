@@ -56,8 +56,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), jwtConfig, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthFilter.class)
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.POST, "/login", "/api/v1/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/restaurants/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/restaurants/**").hasRole("RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/v1/restaurants/**").hasRole("RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/restaurants/**").hasRole("RESTAURANT_ADMIN")
                 .anyRequest()
                 .authenticated();
     }
