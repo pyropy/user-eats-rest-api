@@ -1,6 +1,5 @@
 package com.pyropy.usereats.api;
 
-import com.pyropy.usereats.model.Role;
 import com.pyropy.usereats.model.User;
 import com.pyropy.usereats.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
