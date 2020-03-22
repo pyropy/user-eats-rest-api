@@ -5,9 +5,9 @@ import com.pyropy.usereats.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -25,8 +25,8 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public Optional<User> getUserById(@PathVariable("id") String id) {
-        return userService.findById(id);
+    public User getUserById(@PathVariable("id") String id) {
+        return userService.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id" + id + " not found"));
     }
 
     @GetMapping("{username}")

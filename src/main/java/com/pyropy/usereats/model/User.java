@@ -52,15 +52,6 @@ public class User {
     @JsonIgnore
     private List<Role> roles = new ArrayList<>();
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "USER_RESTURAUNT",
-//            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
-//            inverseJoinColumns = {@JoinColumn(name = "RESTURAUNT_ID", referencedColumnName = "ID")})
-//    @BatchSize(size = 20)
-//    @JsonIgnore
-//    private List<Restaurant> restaurants = new ArrayList<>();
-
     public User() {
     }
 
@@ -150,14 +141,6 @@ public class User {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-
-//    public List<Restaurant> getRestaurants() {
-//        return restaurants;
-//    }
-//
-//    public void setRestaurants(List<Restaurant> restaurants) {
-//        this.restaurants = restaurants;
-//    }
 
     public Collection<GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RestaurantService {
@@ -17,6 +18,14 @@ public class RestaurantService {
     @Autowired
     public RestaurantService(RestaurantRepository restaurantRepository) {
         this.restaurantRepository = restaurantRepository;
+    }
+
+    public void delete(Restaurant restaurant) {
+        restaurantRepository.delete(restaurant);
+    }
+
+    public Restaurant save(Restaurant restaurant) {
+        return restaurantRepository.save(restaurant);
     }
 
     public List<Restaurant> findAll() {
@@ -46,5 +55,13 @@ public class RestaurantService {
     public Restaurant createRestaurant(Restaurant restaurantInfo, User user) {
         Restaurant restaurant = new Restaurant(restaurantInfo.getName(), restaurantInfo.getDescription(), user);
         return restaurantRepository.save(restaurant);
+    }
+
+    public Optional<Restaurant> findRestaurantById(Long id) {
+        return restaurantRepository.findById(id);
+    }
+
+    public Optional<Restaurant> findRestaurantByIdAndOwnerUsername(Long id, String username) {
+        return restaurantRepository.findRestaurantByIdAndOwnerUsername(id, username);
     }
 }
