@@ -24,18 +24,18 @@ public class UserController {
         return users;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public User getUserById(@PathVariable("id") String id) {
         return userService.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id" + id + " not found"));
     }
 
-    @GetMapping("{username}")
+    @GetMapping("/{username}")
     public User getUserByUsername(@PathVariable("username") String username) {
         return userService.findByUsername(username);
     }
 
     /*
-     *
+     * Endpoint used for registering users.
      */
     @PostMapping
     public User createUser(@RequestBody User user, @RequestParam(required = false) final boolean isRestaurantAdmin) {

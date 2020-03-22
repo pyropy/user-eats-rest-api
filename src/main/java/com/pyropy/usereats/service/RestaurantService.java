@@ -53,7 +53,8 @@ public class RestaurantService {
     }
 
     public Restaurant createRestaurant(Restaurant restaurantInfo, User user) {
-        Restaurant restaurant = new Restaurant(restaurantInfo.getName(), restaurantInfo.getDescription(), user);
+        Restaurant restaurant = new Restaurant(restaurantInfo.getName(),
+                restaurantInfo.getDescription(), restaurantInfo.getAddress(), user);
         return restaurantRepository.save(restaurant);
     }
 

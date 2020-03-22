@@ -1,6 +1,5 @@
 package com.pyropy.usereats.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.OnDelete;
@@ -9,8 +8,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "RESTURAUNT")
-public class Restaurant {
+@Table(name = "FOOD_ARTICLE")
+public class FoodArticle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,8 +22,8 @@ public class Restaurant {
     private String name;
 
     @JsonProperty
-    @Column(nullable = false, name = "ADDRESS")
-    private String address;
+    @Column(nullable = false, name = "PRICE")
+    private Float price;
 
     @Column(name = "DESCRIPTION")
     @JsonProperty
@@ -35,28 +34,24 @@ public class Restaurant {
     private boolean active;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "RESTAURAUNT_ID", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private User owner;
+    private Restaurant restaurant;
 
-    public Restaurant() {
+    public FoodArticle() {
     }
 
-    public Restaurant(String name, String description, String address, User owner) {
+    public FoodArticle(String name, String description, Float price, Restaurant restaurant) {
         this.name = name;
         this.description = description;
-        this.owner = owner;
-        this.address = address;
-        this.active = true; // todo: update changing restaurant status
+        this.price = price;
+        this.restaurant = restaurant;
+        this.active = true;
     }
 
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public long getId() {
+        return id;
     }
 
     public String getName() {
@@ -67,23 +62,15 @@ public class Restaurant {
         this.name = name;
     }
 
+    public Float getPrice() {
+        return price;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
