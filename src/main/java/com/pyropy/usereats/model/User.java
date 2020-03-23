@@ -16,7 +16,6 @@ public class User {
     @Column(name = "ID")
     private String id;
 
-
     @Column(nullable = false, unique = true, length = 100, name = "EMAIL")
     private String email;
 
@@ -53,7 +52,6 @@ public class User {
     @JsonIgnore
     private List<Role> roles = new ArrayList<>();
 
-
     public User() {
     }
 
@@ -62,7 +60,8 @@ public class User {
                 String address,
                 String password,
                 String email,
-                String username) {
+                String username,
+                List<Role> roles) {
         this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -70,6 +69,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.username = username;
+        this.roles = roles;
         this.activated = true; // todo: implement email confirmation
     }
 
