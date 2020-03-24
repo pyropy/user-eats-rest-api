@@ -4,9 +4,10 @@ import com.pyropy.usereats.model.Restaurant;
 import com.pyropy.usereats.model.User;
 import com.pyropy.usereats.service.JwtService;
 import com.pyropy.usereats.service.RestaurantService;
-import com.pyropy.usereats.service.UserService;
+import com.pyropy.usereats.service.UserModelDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -18,13 +19,13 @@ import java.util.List;
 public class RestaurantController {
 
     @Autowired
-    private RestaurantService restaurantService;
+    RestaurantService restaurantService;
 
     @Autowired
-    private JwtService jwtService;
+    JwtService jwtService;
 
     @Autowired
-    private UserService userService;
+    UserModelDetailsService userModelDetailsService;
 
     @GetMapping
     public List<Restaurant> getAllRestaurants() {
@@ -37,34 +38,29 @@ public class RestaurantController {
     }
 
     @GetMapping(path = "me")
-    public List<Restaurant> getUserRestaurants(@RequestHeader("Authorization") String token) {
-        String username = jwtService.getUsernameFromToken(token);
-        return restaurantService.findByOwnerUsername(username);
+    public List<Restaurant> getUserRestaurants(Authentication authentication) {
+        return restaurantService.findByOwnerUsername(authentication.getName());
     }
 
     @PostMapping
-    public Restaurant createRestaurant(@RequestHeader("Authorization") String token, @RequestBody Restaurant restaurantInfo) {
-        String username = jwtService.getUsernameFromToken(token);
-        User user = userService.findByUsername(username);
+    public Restaurant createRestaurant(Authentication authentication, @RequestBody Restaurant restaurantInfo) {
+        User user = userModelDetailsService.findUserByAuthentication(authentication);
         return restaurantService.createRestaurant(restaurantInfo, user);
     }
 
-    @PutMapping(path = "{id}")
-    public Restaurant updateRestaurant(@RequestHeader("Authorization") String token, @PathVariable("id") Long id, @RequestBody Restaurant restaurantInfo) {
-        String username = jwtService.getUsernameFromToken(token);
-        return restaurantService.findRestaurantByIdAndOwnerUsername(id, username).map(restaurant -> {
-            restaurant.setName(restaurantInfo.getName());
-            restaurant.setDescription(restaurantInfo.getDescription());
-            return restaurantService.save(restaurant);
-        }).orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
+    @PutMapping
+    public Restaurant updateRestaurant(Authentication authentication, @RequestBody Restaurant restaurantInfo) {
+        return restaurantService.findRestaurantByIdAndOwnerUsername(restaurantInfo.getId(), authentication.getName())
+                .map(restaurant -> restaurantService.updateRestaurant(restaurant, restaurantInfo))
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
     }
 
-    @DeleteMapping(path = "{id}")
-    public ResponseEntity<?> updateRestaurant(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
-        String username = jwtService.getUsernameFromToken(token);
-        return restaurantService.findRestaurantByIdAndOwnerUsername(id, username).map(restaurant -> {
-            restaurantService.delete(restaurant);
-            return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
+    @DeleteMapping
+    public ResponseEntity<?> deleteRestaurant(Authentication authentication, @RequestBody Restaurant restaurantInfo) {
+        return restaurantService.findRestaurantByIdAndOwnerUsername(restaurantInfo.getId(), authentication.getName())
+                .map(restaurant -> {
+                    restaurantService.delete(restaurant);
+                    return ResponseEntity.ok().build();
+                }).orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
     }
 }

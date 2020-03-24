@@ -24,7 +24,7 @@ public class RestaurantService {
         restaurantRepository.delete(restaurant);
     }
 
-    public Restaurant save(Restaurant restaurant) {
+    public Restaurant saveRestaurant(Restaurant restaurant) {
         return restaurantRepository.save(restaurant);
     }
 
@@ -57,6 +57,13 @@ public class RestaurantService {
                 restaurantInfo.getDescription(), restaurantInfo.getAddress(), user);
         return restaurantRepository.save(restaurant);
     }
+
+    public Restaurant updateRestaurant(Restaurant restaurant, Restaurant updateRestaurant) {
+        restaurant.setName(updateRestaurant.getName());
+        restaurant.setDescription(updateRestaurant.getDescription());
+        return saveRestaurant(restaurant);
+    }
+
 
     public Optional<Restaurant> findRestaurantById(Long id) {
         return restaurantRepository.findById(id);
