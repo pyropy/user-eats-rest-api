@@ -1,7 +1,7 @@
 package com.pyropy.usereats.service;
 
 import com.pyropy.usereats.config.SendGridConfig;
-import com.pyropy.usereats.model.Notification;
+import com.pyropy.usereats.dto.NotificationDto;
 import com.pyropy.usereats.model.User;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
@@ -41,8 +41,8 @@ public class SendGridEmailService implements UserNotificationService {
     }
 
     @Override
-    public void notifyUser(User from, User to, Notification notification) {
-        Content content = new Content("text/html", notification.getContent());
-        sendEmail(from.getEmail(), to.getEmail(), notification.getSubject(), content);
+    public void notifyUser(User from, User to, NotificationDto notificationDto) {
+        Content content = new Content("text/html", notificationDto.getContent());
+        sendEmail(from.getEmail(), to.getEmail(), notificationDto.getSubject(), content);
     }
 }

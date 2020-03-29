@@ -2,7 +2,7 @@ package com.pyropy.usereats.api;
 
 import com.pyropy.usereats.model.*;
 import com.pyropy.usereats.service.OrderService;
-import com.pyropy.usereats.service.UserModelDetailsService;
+import com.pyropy.usereats.service.UserSecurityDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,7 +20,7 @@ public class OrderController {
     OrderService orderService;
 
     @Autowired
-    UserModelDetailsService userModelDetailsService;
+    UserSecurityDetailsService userSecurityDetailsService;
 
     /* Get user order by order id */
     @GetMapping(value = "{id}")
@@ -40,7 +40,7 @@ public class OrderController {
                              @RequestBody OrderArticles articles) {
 //                             @RequestBody FoodArticle foodArticle,
 //                             @RequestParam Integer quantity) {
-        User user = userModelDetailsService.findUserByAuthentication(authentication);
+        User user = userSecurityDetailsService.findUserByAuthentication(authentication);
         return orderService.createOrder(articles.getArticle(), user, articles.getQuantity());
     }
 

@@ -1,8 +1,8 @@
 package com.pyropy.usereats.service;
 
-import com.pyropy.usereats.model.Notification;
+import com.pyropy.usereats.dto.NotificationDto;
 import com.pyropy.usereats.model.User;
 
 public interface UserNotificationService {
-    public void notifyUser(User from, User to, Notification notification);
+    public void notifyUser(User from, User to, NotificationDto notificationDto);
 }

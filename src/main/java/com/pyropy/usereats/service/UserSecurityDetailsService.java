@@ -2,7 +2,7 @@ package com.pyropy.usereats.service;
 
 import com.pyropy.usereats.model.User;
 import com.pyropy.usereats.repository.UserRepository;
-import com.pyropy.usereats.model.UserModelDetails;
+import com.pyropy.usereats.security.UserSecurityDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class UserModelDetailsService implements UserDetailsService {
+public class UserSecurityDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Autowired
-    public UserModelDetailsService(UserRepository userRepository) {
+    public UserSecurityDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        return new UserModelDetails(user);
+        return new UserSecurityDetails(user);
     }
 
     public User findUserByAuthentication(Authentication authentication) throws UsernameNotFoundException {

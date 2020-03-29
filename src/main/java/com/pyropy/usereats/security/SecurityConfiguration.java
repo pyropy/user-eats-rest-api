@@ -3,7 +3,7 @@ package com.pyropy.usereats.security;
 import com.pyropy.usereats.config.JwtConfig;
 import com.pyropy.usereats.jwt.JwtTokenVerifier;
 import com.pyropy.usereats.jwt.JwtUsernameAndPasswordAuthFilter;
-import com.pyropy.usereats.service.UserModelDetailsService;
+import com.pyropy.usereats.service.UserSecurityDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +25,13 @@ import javax.crypto.SecretKey;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final UserModelDetailsService userDetailsService;
+    private final UserSecurityDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtConfig jwtConfig;
     private final SecretKey secretKey;
 
     @Autowired
-    public SecurityConfiguration(UserModelDetailsService userDetailsService,
+    public SecurityConfiguration(UserSecurityDetailsService userDetailsService,
                                  PasswordEncoder passwordEncoder,
                                  JwtConfig jwtConfig,
                                  SecretKey secretKey) {

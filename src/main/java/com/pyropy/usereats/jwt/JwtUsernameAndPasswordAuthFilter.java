@@ -2,7 +2,6 @@ package com.pyropy.usereats.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pyropy.usereats.config.JwtConfig;
-import com.pyropy.usereats.model.UserModelDetails;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {

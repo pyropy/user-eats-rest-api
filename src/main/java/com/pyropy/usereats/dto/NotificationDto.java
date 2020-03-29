@@ -1,11 +1,11 @@
-package com.pyropy.usereats.model;
+package com.pyropy.usereats.dto;
 
 // todo: attachment
-public class Notification {
+public class NotificationDto {
     private String subject;
     private String content;
 
-    public Notification(String subject, String content) {
+    public NotificationDto(String subject, String content) {
         this.subject = subject;
         this.content = content;
     }
