@@ -3,6 +3,9 @@ package com.pyropy.usereats.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RestaurantDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
+
     @JsonProperty
     private String name;
 
@@ -34,5 +37,13 @@ public class RestaurantDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

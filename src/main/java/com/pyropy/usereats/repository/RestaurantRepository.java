@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
     Iterable<Restaurant> findByNameLike(String name);
     Iterable<Restaurant> findRestaurantByOwnerUsername(String username);
-    Optional<Restaurant> findRestaurantByNameAndOwnerUsername(String restaurantName, String username);
+    Optional<Restaurant> findRestaurantByIdAndOwnerUsername(Long id, String username);
 }

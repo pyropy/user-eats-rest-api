@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -42,7 +41,7 @@ public class RestaurantService {
     }
 
 
-    public List<RestaurantDto> convertRestaurantIterableToDtoList(Iterable<Restaurant> restaurants) {
+    public List<RestaurantDto> convertIterableToListDto(Iterable<Restaurant> restaurants) {
         return StreamSupport
                 .stream(restaurants.spliterator(), false)
                 .map(this::convertToDto)
@@ -50,8 +49,7 @@ public class RestaurantService {
     }
 
     public List<RestaurantDto> findAll() {
-        List<Restaurant> restaurants = new ArrayList<>();
-        return convertRestaurantIterableToDtoList(restaurantRepository.findAll());
+        return convertIterableToListDto(restaurantRepository.findAll());
     }
 
     /*
@@ -59,7 +57,7 @@ public class RestaurantService {
      */
     public List<RestaurantDto> findByNameLike(String name) {
         Iterable<Restaurant> restaurants = restaurantRepository.findByNameLike(name);
-        return convertRestaurantIterableToDtoList(restaurants);
+        return convertIterableToListDto(restaurants);
     }
 
     /*
@@ -67,7 +65,7 @@ public class RestaurantService {
      */
     public List<RestaurantDto> findByOwnerUsername(String username) {
         Iterable<Restaurant> restaurants = restaurantRepository.findRestaurantByOwnerUsername(username);
-        return convertRestaurantIterableToDtoList(restaurants);
+        return convertIterableToListDto(restaurants);
     }
 
     public RestaurantDto createRestaurant(RestaurantDto restaurantInfo, String username) {
@@ -79,7 +77,7 @@ public class RestaurantService {
     }
 
     public RestaurantDto updateRestaurant(RestaurantDto restaurantDto, String username) {
-        restaurantRepository.findRestaurantByNameAndOwnerUsername(restaurantDto.getName(), username)
+        restaurantRepository.findRestaurantByIdAndOwnerUsername(restaurantDto.getId(), username)
                 .map(restaurant -> {
                     restaurant.setName(restaurant.getName());
                     restaurant.setDescription(restaurant.getDescription());
@@ -92,11 +90,17 @@ public class RestaurantService {
 
     public void deleteRestaurant(RestaurantDto restaurantDto, String username) {
         restaurantRepository
-                .findRestaurantByNameAndOwnerUsername(restaurantDto.getName(), username)
+                .findRestaurantByIdAndOwnerUsername(restaurantDto.getId(), username)
                 .map(restaurant -> {
                     restaurantRepository.delete(restaurant);
                     return null;
                 });
     }
 
+    public RestaurantDto findRestaurantByIdAndOwnerUsername(Long restaurantId, String username) {
+        return restaurantRepository
+                .findRestaurantByIdAndOwnerUsername(restaurantId, username)
+                .map(this::convertToDto)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found."));
+    }
 }

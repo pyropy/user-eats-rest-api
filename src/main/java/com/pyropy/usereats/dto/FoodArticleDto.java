@@ -19,6 +19,9 @@ public class FoodArticleDto {
     @JsonProperty
     private String description;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Long restaurantId;
+
     public long getId() {
         return id;
     }
@@ -57,5 +60,13 @@ public class FoodArticleDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(Long restaurantId) {
+        this.restaurantId = restaurantId;
     }
 }

@@ -1,12 +1,8 @@
 package com.pyropy.usereats.api;
 
-import com.pyropy.usereats.model.FoodArticle;
-import com.pyropy.usereats.model.Restaurant;
+import com.pyropy.usereats.dto.FoodArticleDto;
 import com.pyropy.usereats.service.FoodArticleService;
-import com.pyropy.usereats.service.JwtService;
-import com.pyropy.usereats.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,53 +15,35 @@ import java.util.List;
 public class FoodArticleController {
 
     @Autowired
-    FoodArticleService foodArticleService;
-
-    @Autowired
-    RestaurantService restaurantService;
-
-    @Autowired
-    JwtService jwtService;
+    private FoodArticleService foodArticleService;
 
     @GetMapping
-    public List<FoodArticle> getAllFoodArticles() {
+    public List<FoodArticleDto> getAllFoodArticles() {
         // todo: add pagination
         return foodArticleService.findAll();
     }
 
     @GetMapping(value = "{restaurantId}")
-    public List<FoodArticle> getRestaurantFoodArticle(@PathParam("restaurantId") Long restaurantId) {
+    public List<FoodArticleDto> getRestaurantFoodArticle(@PathParam("restaurantId") Long restaurantId) {
         return foodArticleService.findFoodArticlesByRestaurantId(restaurantId);
     }
 
-    @PostMapping(value = "{restaurantId}")
-    public FoodArticle createFoodArticle(Authentication authentication,
-                                         @PathParam("restaurantId") Long restaurantId,
-                                         @RequestBody FoodArticle foodArticle) {
-        Restaurant restaurant = restaurantService.findRestaurantByIdAndOwnerUsername(
-                restaurantId, authentication.getName()).orElseThrow(() -> new EntityNotFoundException("Restaurant not found or you are not restaurant owner."));
-        return foodArticleService.createFoodArticle(foodArticle, restaurant);
+    @PostMapping
+    public FoodArticleDto createFoodArticle(Authentication authentication,
+                                            @RequestBody FoodArticleDto foodArticleDto) {
+        return foodArticleService.createFoodArticle(foodArticleDto, authentication.getName());
     }
 
     @PutMapping
-    public FoodArticle updateFoodArticle(Authentication authentication,
-                                         @RequestBody FoodArticle foodArticleInfo) {
-        return foodArticleService
-                .findFoodArticleByIdAndRestaurantOwnerUsername(foodArticleInfo.getId(), authentication.getName())
-                .map(foodArticle -> foodArticleService.updateFoodArticle(foodArticle, foodArticleInfo))
-                .orElseThrow(() -> new EntityNotFoundException("Food article not found."));
+    public FoodArticleDto updateFoodArticle(Authentication authentication,
+                                            @RequestBody FoodArticleDto foodArticleInfo) {
+        return foodArticleService.updateFoodArticle(foodArticleInfo, authentication.getName());
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteFoodArticle(Authentication authentication,
-                                               @RequestBody FoodArticle foodArticleInfo) {
-        return foodArticleService
-                .findFoodArticleByIdAndRestaurantOwnerUsername(foodArticleInfo.getId(), authentication.getName())
-                .map(foodArticle -> {
-                    foodArticleService.deleteFoodArticle(foodArticle);
-                    return ResponseEntity.ok().build();
-                })
-                .orElseThrow(() -> new EntityNotFoundException("Food article not found."));
+    public void deleteFoodArticle(Authentication authentication,
+                                  @RequestBody FoodArticleDto foodArticleInfo) {
+        foodArticleService.deleteFoodArticle(foodArticleInfo, authentication.getName());
     }
 
 }
