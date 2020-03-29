@@ -6,8 +6,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Entity
@@ -28,25 +28,26 @@ public class Order {
     @Enumerated(EnumType.ORDINAL)
     private OrderStatus orderStatus;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FOOD_ARTICLE_ID", nullable = false)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<FoodArticle> articles = new ArrayList<>();
+    @JsonProperty
+    @Column(name = "DELIVERY_ADDRESS")
+    private String deliveryAddress;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "USER_ID", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDER_ARTICLES_ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<OrderArticles> orderArticles = new ArrayList<>();
 
     public Order() {
     }
 
-    public Order(User user, FoodArticle foodArticle) {
+    public Order(User user) {
         this.orderStatus = OrderStatus.OPEN;
         this.user = user;
-        this.subtotal = foodArticle.getPrice(); // set initial price to first food article
-        this.articles = Collections.singletonList(foodArticle);
     }
 
     public Float getSubtotal() {
@@ -57,27 +58,33 @@ public class Order {
         this.subtotal = subtotal;
     }
 
-    public long getId() {
-        return id;
+    public long getId() { return id;
     }
 
     public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
-    public List<FoodArticle> getArticles() {
-        return articles;
-    }
-
-    public void setArticles(List<FoodArticle> articles) {
-        this.articles = articles;
+    public void setOrderStatus(OrderStatus orderStatus) { this.orderStatus = orderStatus;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public List<OrderArticles> getOrderArticles() {
+        return orderArticles;
+    }
+
+    public void setOrderArticles(List<OrderArticles> orderArticles) {
+        this.orderArticles = orderArticles;
     }
 }

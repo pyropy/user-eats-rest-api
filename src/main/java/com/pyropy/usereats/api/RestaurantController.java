@@ -1,16 +1,13 @@
 package com.pyropy.usereats.api;
 
-import com.pyropy.usereats.model.Restaurant;
-import com.pyropy.usereats.model.User;
-import com.pyropy.usereats.service.JwtService;
+import com.pyropy.usereats.dto.RestaurantDto;
 import com.pyropy.usereats.service.RestaurantService;
-import com.pyropy.usereats.service.UserModelDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
@@ -19,48 +16,37 @@ import java.util.List;
 public class RestaurantController {
 
     @Autowired
-    RestaurantService restaurantService;
-
-    @Autowired
-    JwtService jwtService;
-
-    @Autowired
-    UserModelDetailsService userModelDetailsService;
+    private RestaurantService restaurantService;
 
     @GetMapping
-    public List<Restaurant> getAllRestaurants() {
+    public List<RestaurantDto> getAllRestaurants() {
         return restaurantService.findAll();
     }
 
     @GetMapping(value = "{name}")
-    public List<Restaurant> getResturauntsByName(@PathParam("name") String name) {
+    public List<RestaurantDto> getResturauntsByName(@PathParam("name") String name) {
         return restaurantService.findByNameLike(name);
     }
 
     @GetMapping(path = "me")
-    public List<Restaurant> getUserRestaurants(Authentication authentication) {
+    @Secured(value = "ROLE_RESTAURANT_ADMIN")
+    public List<RestaurantDto> getUserRestaurants(Authentication authentication) {
         return restaurantService.findByOwnerUsername(authentication.getName());
     }
 
     @PostMapping
-    public Restaurant createRestaurant(Authentication authentication, @RequestBody Restaurant restaurantInfo) {
-        User user = userModelDetailsService.findUserByAuthentication(authentication);
-        return restaurantService.createRestaurant(restaurantInfo, user);
+    @ResponseStatus(HttpStatus.CREATED)
+    public RestaurantDto createRestaurant(Authentication authentication, @RequestBody RestaurantDto restaurantInfo) {
+        return restaurantService.createRestaurant(restaurantInfo, authentication.getName());
     }
 
     @PutMapping
-    public Restaurant updateRestaurant(Authentication authentication, @RequestBody Restaurant restaurantInfo) {
-        return restaurantService.findRestaurantByIdAndOwnerUsername(restaurantInfo.getId(), authentication.getName())
-                .map(restaurant -> restaurantService.updateRestaurant(restaurant, restaurantInfo))
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
+    public RestaurantDto updateRestaurant(Authentication authentication, @RequestBody RestaurantDto restaurantInfo) {
+        return restaurantService.updateRestaurant(restaurantInfo, authentication.getName());
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteRestaurant(Authentication authentication, @RequestBody Restaurant restaurantInfo) {
-        return restaurantService.findRestaurantByIdAndOwnerUsername(restaurantInfo.getId(), authentication.getName())
-                .map(restaurant -> {
-                    restaurantService.delete(restaurant);
-                    return ResponseEntity.ok().build();
-                }).orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
+    public void deleteRestaurant(Authentication authentication, @RequestBody RestaurantDto restaurantInfo) {
+        restaurantService.deleteRestaurant(restaurantInfo, authentication.getName());
     }
 }

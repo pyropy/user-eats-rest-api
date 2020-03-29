@@ -99,4 +99,12 @@ public class FoodArticle {
     public boolean isActive() {
         return active;
     }
+
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
 }
