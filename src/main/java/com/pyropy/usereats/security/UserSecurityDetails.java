@@ -1,14 +1,15 @@
-package com.pyropy.usereats.model;
+package com.pyropy.usereats.security;
 
+import com.pyropy.usereats.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class UserModelDetails implements UserDetails {
+public class UserSecurityDetails implements UserDetails {
     private User user;
 
-    public UserModelDetails(User user) {
+    public UserSecurityDetails(User user) {
         this.user = user;
     }
 

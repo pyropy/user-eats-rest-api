@@ -23,23 +23,17 @@ public class User {
     private String username;
 
     @Column(length = 100, name = "PASSWORD")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-
     @Column(length = 50, nullable = false, name = "FIRST_NAME")
-    @JsonProperty
     private String firstName;
 
     @Column(length = 50, nullable = false, name = "LAST_NAME")
-    @JsonProperty
     private String lastName;
 
-    @JsonProperty
     @Column(nullable = false, name = "ADDRESS")
     private String address;
 
-    @JsonIgnore
     @Column(nullable = false, name = "ACTIVATED")
     private boolean activated;
 
@@ -49,7 +43,6 @@ public class User {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_NAME", referencedColumnName = "NAME")})
     @BatchSize(size = 20)
-    @JsonIgnore
     private List<Role> roles = new ArrayList<>();
 
     public User() {
@@ -60,8 +53,7 @@ public class User {
                 String address,
                 String password,
                 String email,
-                String username,
-                List<Role> roles) {
+                String username) {
         this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -69,7 +61,6 @@ public class User {
         this.password = password;
         this.email = email;
         this.username = username;
-        this.roles = roles;
         this.activated = true; // todo: implement email confirmation
     }
 

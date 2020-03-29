@@ -1,15 +1,13 @@
 package com.pyropy.usereats.api;
 
-import com.pyropy.usereats.model.Restaurant;
-import com.pyropy.usereats.model.User;
-import com.pyropy.usereats.service.JwtService;
+import com.pyropy.usereats.dto.RestaurantDto;
 import com.pyropy.usereats.service.RestaurantService;
-import com.pyropy.usereats.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
@@ -20,51 +18,35 @@ public class RestaurantController {
     @Autowired
     private RestaurantService restaurantService;
 
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UserService userService;
-
     @GetMapping
-    public List<Restaurant> getAllRestaurants() {
+    public List<RestaurantDto> getAllRestaurants() {
         return restaurantService.findAll();
     }
 
     @GetMapping(value = "{name}")
-    public List<Restaurant> getResturauntsByName(@PathParam("name") String name) {
+    public List<RestaurantDto> getResturauntsByName(@PathParam("name") String name) {
         return restaurantService.findByNameLike(name);
     }
 
     @GetMapping(path = "me")
-    public List<Restaurant> getUserRestaurants(@RequestHeader("Authorization") String token) {
-        String username = jwtService.getUsernameFromToken(token);
-        return restaurantService.findByOwnerUsername(username);
+    @Secured(value = "ROLE_RESTAURANT_ADMIN")
+    public List<RestaurantDto> getUserRestaurants(Authentication authentication) {
+        return restaurantService.findByOwnerUsername(authentication.getName());
     }
 
     @PostMapping
-    public Restaurant createRestaurant(@RequestHeader("Authorization") String token, @RequestBody Restaurant restaurantInfo) {
-        String username = jwtService.getUsernameFromToken(token);
-        User user = userService.findByUsername(username);
-        return restaurantService.createRestaurant(restaurantInfo, user);
+    @ResponseStatus(HttpStatus.CREATED)
+    public RestaurantDto createRestaurant(Authentication authentication, @RequestBody RestaurantDto restaurantInfo) {
+        return restaurantService.createRestaurant(restaurantInfo, authentication.getName());
     }
 
-    @PutMapping(path = "{id}")
-    public Restaurant updateRestaurant(@RequestHeader("Authorization") String token, @PathVariable("id") Long id, @RequestBody Restaurant restaurantInfo) {
-        String username = jwtService.getUsernameFromToken(token);
-        return restaurantService.findRestaurantByIdAndOwnerUsername(id, username).map(restaurant -> {
-            restaurant.setName(restaurantInfo.getName());
-            restaurant.setDescription(restaurantInfo.getDescription());
-            return restaurantService.save(restaurant);
-        }).orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
+    @PutMapping
+    public RestaurantDto updateRestaurant(Authentication authentication, @RequestBody RestaurantDto restaurantInfo) {
+        return restaurantService.updateRestaurant(restaurantInfo, authentication.getName());
     }
 
-    @DeleteMapping(path = "{id}")
-    public ResponseEntity<?> updateRestaurant(@RequestHeader("Authorization") String token, @PathVariable("id") Long id) {
-        String username = jwtService.getUsernameFromToken(token);
-        return restaurantService.findRestaurantByIdAndOwnerUsername(id, username).map(restaurant -> {
-            restaurantService.delete(restaurant);
-            return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new EntityNotFoundException("Restaurant with given id not found or not owned by you."));
+    @DeleteMapping
+    public void deleteRestaurant(Authentication authentication, @RequestBody RestaurantDto restaurantInfo) {
+        restaurantService.deleteRestaurant(restaurantInfo, authentication.getName());
     }
 }
