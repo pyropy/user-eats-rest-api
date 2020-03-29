@@ -1,9 +1,6 @@
 package com.pyropy.usereats.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class OrderArticles {
@@ -11,21 +8,17 @@ public class OrderArticles {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
 
     @OneToOne
-    @JsonProperty
     @JoinColumn(name = "ORDERS_ID", nullable = false)
     private Order order;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FOOD_ARTICLE_ID", nullable = false)
-    @JsonProperty
     private FoodArticle article;
 
     @Column
-    @JsonProperty
     private Integer quantity;
 
     public OrderArticles() {

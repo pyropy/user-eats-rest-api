@@ -1,10 +1,10 @@
 package com.pyropy.usereats.api;
 
+import com.pyropy.usereats.dto.OrderArticleDto;
+import com.pyropy.usereats.dto.OrderDto;
 import com.pyropy.usereats.model.*;
 import com.pyropy.usereats.service.OrderService;
-import com.pyropy.usereats.service.UserSecurityDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,44 +17,37 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    OrderService orderService;
-
-    @Autowired
-    UserSecurityDetailsService userSecurityDetailsService;
+    private OrderService orderService;
 
     /* Get user order by order id */
     @GetMapping(value = "{id}")
-    public Order getUserOrder(Authentication authentication,
-                              @PathParam("id") Long id) {
+    public OrderDto getUserOrder(Authentication authentication,
+                                 @PathParam("id") Long id) {
         return orderService.findOrderByIdAndUsername(id, authentication.getName());
     }
 
     /* Get all user orders */
-    @GetMapping(path = "all")
-    public List<Order> getUserOrders(Authentication authentication) {
+    @GetMapping(path = "me")
+    public List<OrderDto> getUserOrders(Authentication authentication) {
         return orderService.findUserOrders(authentication.getName());
     }
 
     @PostMapping
-    public Order createOrder(Authentication authentication,
-                             @RequestBody OrderArticles articles) {
-//                             @RequestBody FoodArticle foodArticle,
-//                             @RequestParam Integer quantity) {
-        User user = userSecurityDetailsService.findUserByAuthentication(authentication);
-        return orderService.createOrder(articles.getArticle(), user, articles.getQuantity());
+    public OrderDto createOrder(Authentication authentication,
+                                @RequestBody OrderArticleDto articles) {
+        return orderService.createOrder(articles, authentication.getName());
     }
 
     @PutMapping
-    public Order updateOrderFoodArticles(Authentication authentication,
-                                         @RequestBody OrderArticles orderArticles) {
-        Order order = orderService.findOrderByIdAndUsername(orderArticles.getOrderId(), authentication.getName());
-        return orderService.updateOrderWithFoodArticle(order, orderArticles.getArticle(), orderArticles.getQuantity());
+    public OrderDto updateOrderFoodArticles(Authentication authentication,
+                                            @RequestBody OrderArticleDto orderArticleDto) {
+        return orderService.updateOrderArticles(orderArticleDto, authentication.getName());
     }
 
-    @PutMapping(value = "{id}/{status}")
-    public ResponseEntity<?> updateOrderStatus(Authentication authentication,
-                                               @RequestParam("id") Long id,
-                                               @RequestParam("status") OrderStatus status) {
-        return ResponseEntity.ok().build();
+    @PutMapping(value = "{status}")
+    public OrderDto updateOrderStatus(Authentication authentication,
+                                      @RequestBody OrderDto orderDto,
+                                      @RequestParam("status") OrderStatus status) {
+        return orderService.updateOrderStatus(orderDto, status, authentication.getName());
     }
 }
