@@ -1,9 +1,14 @@
 package com.pyropy.usereats.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class RestaurantDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
+    @JsonProperty
     private Long id;
 
     @JsonProperty
@@ -14,36 +19,4 @@ public class RestaurantDto {
 
     @JsonProperty
     private String description;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

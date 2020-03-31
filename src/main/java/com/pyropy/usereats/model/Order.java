@@ -1,26 +1,31 @@
 package com.pyropy.usereats.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
+@Getter
+@Setter
 @Entity
 @Table(name = "ORDERS")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private long id;
+    @Column(name = "ID", nullable = false, updatable = false)
+    private Long id;
 
     @Column(nullable = false, name = "SUBTOTAL")
-    private Float subtotal;
+    private Float subtotal = (float) 0;
 
     @Column(nullable = false, name = "TOTAL")
-    private Float total;
+    private Float total = (float) 0;
 
     @Column(nullable = false, name = "STATUS")
     @Enumerated(EnumType.ORDINAL)
@@ -29,15 +34,12 @@ public class Order {
     @Column(name = "DELIVERY_ADDRESS")
     private String deliveryAddress;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORDER_ARTICLES_ID", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<OrderArticles> orderArticles = new ArrayList<>();
+    @OneToMany(mappedBy = "order")
+    private Set<FoodArticleOrder> foodArticles = new HashSet<>();
 
     public Order() {
     }
@@ -45,45 +47,5 @@ public class Order {
     public Order(User user) {
         this.orderStatus = OrderStatus.OPEN;
         this.user = user;
-    }
-
-    public Float getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(Float subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getDeliveryAddress() {
-        return deliveryAddress;
-    }
-
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
-    }
-
-    public List<OrderArticles> getOrderArticles() {
-        return orderArticles;
-    }
-
-    public void setOrderArticles(List<OrderArticles> orderArticles) {
-        this.orderArticles = orderArticles;
     }
 }

@@ -2,12 +2,16 @@ package com.pyropy.usereats.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pyropy.usereats.model.OrderStatus;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class OrderDto {
     @JsonProperty
-    private Long orderId;
+    private Long id;
 
     @JsonProperty
     private Float subtotal;
@@ -19,56 +23,8 @@ public class OrderDto {
     private OrderStatus status;
 
     @JsonProperty
-    private List<OrderArticleDto> orderArticles;
+    private List<OrderFoodArticleDto> foodArticles;
 
     @JsonProperty
     private String deliveryAddress;
-
-    public Float getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(Float subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public Float getTotal() {
-        return total;
-    }
-
-    public void setTotal(Float total) {
-        this.total = total;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public List<OrderArticleDto> getOrderArticles() {
-        return orderArticles;
-    }
-
-    public void setOrderArticles(List<OrderArticleDto> orderArticles) {
-        this.orderArticles = orderArticles;
-    }
-
-    public String getDeliveryAddress() {
-        return deliveryAddress;
-    }
-
-    public void setDeliveryAddress(String deliveryAddress) {
-        this.deliveryAddress = deliveryAddress;
-    }
-
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
 }

@@ -1,6 +1,6 @@
 package com.pyropy.usereats.api;
 
-import com.pyropy.usereats.dto.OrderArticleDto;
+import com.pyropy.usereats.dto.OrderFoodArticleDto;
 import com.pyropy.usereats.dto.OrderDto;
 import com.pyropy.usereats.model.*;
 import com.pyropy.usereats.service.OrderService;
@@ -27,21 +27,21 @@ public class OrderController {
     }
 
     /* Get all user orders */
-    @GetMapping(path = "me")
+    @GetMapping(path = "me/all")
     public List<OrderDto> getUserOrders(Authentication authentication) {
         return orderService.findUserOrders(authentication.getName());
     }
 
     @PostMapping
     public OrderDto createOrder(Authentication authentication,
-                                @RequestBody OrderArticleDto articles) {
+                                @RequestBody OrderFoodArticleDto articles) {
         return orderService.createOrder(articles, authentication.getName());
     }
 
     @PutMapping
     public OrderDto updateOrderFoodArticles(Authentication authentication,
-                                            @RequestBody OrderArticleDto orderArticleDto) {
-        return orderService.updateOrderArticles(orderArticleDto, authentication.getName());
+                                            @RequestBody OrderFoodArticleDto orderFoodArticleDto) {
+        return orderService.updateOrderArticles(orderFoodArticleDto, authentication.getName());
     }
 
     @PutMapping(value = "{status}")

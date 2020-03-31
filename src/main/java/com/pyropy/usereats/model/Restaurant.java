@@ -1,18 +1,22 @@
 package com.pyropy.usereats.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "RESTURAUNT")
 public class Restaurant {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false, updatable = false)
+    private Long id;
 
     @Column(nullable = false, length = 100, name = "NAME")
     private String name;
@@ -26,8 +30,8 @@ public class Restaurant {
     @Column(nullable = false)
     private boolean active;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE, optional = false)
+    @JoinColumn(name = "USER_ID")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User owner;
 
@@ -37,44 +41,8 @@ public class Restaurant {
     public Restaurant(String name, String description, String address, User owner) {
         this.name = name;
         this.description = description;
-        this.owner = owner;
         this.address = address;
+        this.owner = owner;
         this.active = true; // todo: update changing restaurant status
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 }

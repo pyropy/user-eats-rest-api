@@ -1,5 +1,6 @@
 package com.pyropy.usereats.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pyropy.usereats.dto.UserDto;
 import com.pyropy.usereats.model.User;
 import com.pyropy.usereats.repository.RoleRepository;

@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface FoodArticleRepository extends PagingAndSortingRepository<FoodArticle, Long> {
-    List<FoodArticle> findFoodArticleByRestaurantId(Long id);
+    List<FoodArticle> findFoodArticleByRestaurantId(Long Id);
+
     Optional<FoodArticle> findFoodArticleByIdAndRestaurantOwnerUsername(Long id, String username);
 }

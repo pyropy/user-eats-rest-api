@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -50,6 +49,11 @@ public class FoodArticleService {
                 .collect(Collectors.toList());
     }
 
+    public FoodArticleDto findById(Long id) {
+        return foodArticleRepository.findById(id).map(this::convertToDto)
+                .orElseThrow(() -> new EntityNotFoundException("Food article not found."));
+    }
+
     public List<FoodArticleDto> findAll() {
         return convertIterableToListDto(foodArticleRepository.findAll());
     }
@@ -64,7 +68,7 @@ public class FoodArticleService {
     }
 
     public FoodArticleDto updateFoodArticle(FoodArticleDto foodArticleDto, String username) {
-        foodArticleRepository
+        return foodArticleRepository
                 .findFoodArticleByIdAndRestaurantOwnerUsername(foodArticleDto.getId(), username)
                 .map(foodArticle -> {
                     foodArticle.setName(foodArticle.getName());
@@ -74,7 +78,6 @@ public class FoodArticleService {
                     return convertToDto(foodArticle);
                 })
                 .orElseThrow(() -> new ExpressionException("Food article not found."));
-        return null;
     }
 
     public List<FoodArticleDto> findFoodArticlesByRestaurantId(Long id) {

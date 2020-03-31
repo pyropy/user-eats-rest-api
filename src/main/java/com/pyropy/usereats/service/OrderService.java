@@ -1,6 +1,6 @@
 package com.pyropy.usereats.service;
 
-import com.pyropy.usereats.dto.OrderArticleDto;
+import com.pyropy.usereats.dto.OrderFoodArticleDto;
 import com.pyropy.usereats.dto.OrderDto;
 import com.pyropy.usereats.model.*;
 import com.pyropy.usereats.repository.OrderRepository;
@@ -26,7 +26,7 @@ public class OrderService {
     private UserService userService;
 
     @Autowired
-    private OrderArticleService orderArticleService;
+    private FoodArticleOrderService foodArticleOrderService;
 
     /*
      * Converts Order Entity to OrderDto class.
@@ -49,19 +49,19 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public Order findById(Long id) {
+    public Order findEntityById(Long id) {
         return this.orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found."));
     }
 
     /* Creates new order for user if one not already opened */
-    public OrderDto createOrder(OrderArticleDto orderArticleDto, String username) {
+    public OrderDto createOrder(OrderFoodArticleDto orderFoodArticleDto, String username) {
         User user = userService.convertToEntity(userService.findByUsername(username));
-        orderRepository
-                .findOrderByUserAndOrderStatus(user, OrderStatus.OPEN)
-                .map(order -> updateOrderWithFoodArticle(convertToDto(order), orderArticleDto));
-        Order order = new Order(user);
-        return updateOrderWithFoodArticle(convertToDto(order), orderArticleDto);
+        Order order = new Order();
+        order.setUser(user);
+        order.setOrderStatus(OrderStatus.OPEN);
+        orderRepository.save(order);
+        return updateOrderWithFoodArticle(convertToDto(order), orderFoodArticleDto);
     }
 
     public List<OrderDto> findUserOrders(String username) {
@@ -74,30 +74,39 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Order not found."));
     }
 
-    public OrderDto updateOrderArticles(OrderArticleDto orderArticleDto, String username) {
-        OrderDto orderDto = findOrderByIdAndUsername(orderArticleDto.getOrderId(), username);
-        return updateOrderWithFoodArticle(orderDto, orderArticleDto);
+    public OrderDto updateOrderArticles(OrderFoodArticleDto orderFoodArticleDto, String username) {
+        OrderDto orderDto = findOrderByIdAndUsername(orderFoodArticleDto.getOrderId(), username);
+        return updateOrderWithFoodArticle(orderDto, orderFoodArticleDto);
     }
 
-    private OrderDto updateOrderWithFoodArticle(OrderDto orderDto, OrderArticleDto orderArticleDto) {
-        OrderArticles newOrderArticle = orderArticleService.convertToEntity(orderArticleDto);
-        Order order = convertToEntity(orderDto);
-        List<OrderArticles> orderArticles = order.getOrderArticles();
-        orderArticles.removeIf(article -> article.getArticle().getId() == newOrderArticle.getArticle().getId());
-        orderArticles.add(newOrderArticle);
-        order.setOrderArticles(orderArticles);
+    private OrderDto updateOrderWithFoodArticle(OrderDto orderDto, OrderFoodArticleDto orderFoodArticleDto) {
+        Order order = findEntityById(orderDto.getId());
+        orderFoodArticleDto.setOrderId(order.getId()); // double check
+        foodArticleOrderService.updateFoodArticleOrder(orderFoodArticleDto);
+        order.setSubtotal(calculateSubtotal(order));
+        order.setTotal(calculateTotal(order));
         orderRepository.save(order);
         return convertToDto(order);
     }
 
     public OrderDto updateOrderStatus(OrderDto orderDto, OrderStatus orderStatus, String username) {
         // todo: add sending email of confirmed
-        orderRepository.findOrderByIdAndUserUsername(orderDto.getOrderId(), username)
+        return orderRepository.findOrderByIdAndUserUsername(orderDto.getId(), username)
                 .map(order -> {
                     order.setOrderStatus(orderStatus);
                     return convertToDto(order);
                 }).orElseThrow(() -> new EntityNotFoundException("Order not found"));
-        return null;
     }
 
+
+    private Float calculateSubtotal(Order order) {
+        return order.getFoodArticles()
+                .stream()
+                .map(article -> article.getQuantity() * article.getFoodArticle().getPrice())
+                .reduce(0f, Float::sum);
+    }
+
+    private Float calculateTotal(Order order) {
+        return calculateSubtotal(order);
+    }
 }

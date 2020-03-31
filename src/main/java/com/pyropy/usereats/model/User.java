@@ -1,7 +1,7 @@
 package com.pyropy.usereats.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,12 +9,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.persistence.*;
 import java.util.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "USER")
 public class User {
+
+
     @Id
-    @Column(name = "ID")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false, updatable = false)
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 100, name = "EMAIL")
     private String email;
@@ -35,7 +40,7 @@ public class User {
     private String address;
 
     @Column(nullable = false, name = "ACTIVATED")
-    private boolean activated;
+    private boolean activated = true; // todo: implement email confirmation
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -44,6 +49,10 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "ROLE_NAME", referencedColumnName = "NAME")})
     @BatchSize(size = 20)
     private List<Role> roles = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDERS_ID")
+    private List<Order> orders;
 
     public User() {
     }
@@ -54,83 +63,12 @@ public class User {
                 String password,
                 String email,
                 String username) {
-        this.id = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.password = password;
         this.email = email;
         this.username = username;
-        this.activated = true; // todo: implement email confirmation
-    }
-
-
-    public String getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
     }
 
     public Collection<GrantedAuthority> getAuthorities() {

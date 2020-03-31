@@ -76,7 +76,7 @@ public class RestaurantService {
     }
 
     public RestaurantDto updateRestaurant(RestaurantDto restaurantDto, String username) {
-        restaurantRepository.findRestaurantByIdAndOwnerUsername(restaurantDto.getId(), username)
+        return restaurantRepository.findRestaurantByIdAndOwnerUsername(restaurantDto.getId(), username)
                 .map(restaurant -> {
                     restaurant.setName(restaurant.getName());
                     restaurant.setDescription(restaurant.getDescription());
@@ -84,7 +84,6 @@ public class RestaurantService {
                     return convertToDto(restaurant);
                 })
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant not found."));
-        return null;
     }
 
     public void deleteRestaurant(RestaurantDto restaurantDto, String username) {
