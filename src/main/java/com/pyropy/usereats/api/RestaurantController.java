@@ -24,7 +24,7 @@ public class RestaurantController {
     }
 
     @GetMapping(value = "{name}")
-    public List<RestaurantDto> getResturauntsByName(@PathParam("name") String name) {
+    public List<RestaurantDto> getResturauntsByName(@PathVariable("name") String name) {
         return restaurantService.findByNameLike(name);
     }
 

@@ -24,7 +24,7 @@ public class FoodArticleController {
     }
 
     @GetMapping(value = "{restaurantId}")
-    public List<FoodArticleDto> getRestaurantFoodArticle(@PathParam("restaurantId") Long restaurantId) {
+    public List<FoodArticleDto> getRestaurantFoodArticles(@PathVariable("restaurantId") Long restaurantId) {
         return foodArticleService.findFoodArticlesByRestaurantId(restaurantId);
     }
 

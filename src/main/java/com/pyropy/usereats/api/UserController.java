@@ -21,7 +21,7 @@ public class UserController {
         return userService.findAll();
     }
 
-    @GetMapping("/{username}")
+    @GetMapping(value = "{username}")
     public UserDto getUserByUsername(@PathVariable("username") String username) {
         return userService.findByUsername(username);
     }

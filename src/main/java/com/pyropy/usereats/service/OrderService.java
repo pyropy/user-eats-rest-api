@@ -94,6 +94,7 @@ public class OrderService {
         return orderRepository.findOrderByIdAndUserUsername(orderDto.getId(), username)
                 .map(order -> {
                     order.setOrderStatus(orderStatus);
+                    orderRepository.save(order);
                     return convertToDto(order);
                 }).orElseThrow(() -> new EntityNotFoundException("Order not found"));
     }

@@ -22,7 +22,7 @@ public class OrderController {
     /* Get user order by order id */
     @GetMapping(value = "{id}")
     public OrderDto getUserOrder(Authentication authentication,
-                                 @PathParam("id") Long id) {
+                                 @PathVariable Long id) {
         return orderService.findOrderByIdAndUsername(id, authentication.getName());
     }
 
@@ -47,7 +47,7 @@ public class OrderController {
     @PutMapping(value = "{status}")
     public OrderDto updateOrderStatus(Authentication authentication,
                                       @RequestBody OrderDto orderDto,
-                                      @RequestParam("status") OrderStatus status) {
+                                      @PathVariable OrderStatus status) {
         return orderService.updateOrderStatus(orderDto, status, authentication.getName());
     }
 }
