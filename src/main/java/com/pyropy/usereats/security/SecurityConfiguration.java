@@ -57,12 +57,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/food").hasAnyRole("USER", "RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.GET, "/api/v1/food").permitAll()  // allow anonymous users to list of food articles
+                .antMatchers(HttpMethod.GET, "/api/v1/food").permitAll()  // allow anonymous users to list of food articles
+                .antMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()  // allow users to register
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/api/v1/users/**").hasAnyRole("USER", "RESTAURANT_ADMIN")  // allow users to register
                 .antMatchers(HttpMethod.POST, "/api/v1/food").hasRole("RESTAURANT_ADMIN")
-                .antMatchers(HttpMethod.GET, "/api/v1/restaurants/**").hasAnyRole("USER", "RESTAURANT_ADMIN")
                 .antMatchers(HttpMethod.POST, "/api/v1/restaurants/**").hasRole("RESTAURANT_ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/api/v1/restaurants/**").hasRole("RESTAURANT_ADMIN")
                 .antMatchers(HttpMethod.PUT, "/api/v1/restaurants/**").hasRole("RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.GET, "/api/v1/order/**").hasAnyRole("USER", "RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/v1/order/**").hasAnyRole("USER", "RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/v1/order/**").hasAnyRole("USER", "RESTAURANT_ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/order/**").hasAnyRole("USER", "RESTAURANT_ADMIN")
                 .anyRequest()
                 .authenticated();
     }
