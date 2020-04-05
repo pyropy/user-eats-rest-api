@@ -60,16 +60,24 @@ public class FoodArticleOrderService {
         return convertToDto(foodArticleOrder);
     }
 
+
+    public void deleteFoodArticleOrder(OrderFoodArticleDto orderFoodArticleDto) {
+        Optional<FoodArticleOrder> foodArticleOrder = foodArticleOrderRepository.findFoodArticleOrderByFoodArticleIdAndOrderId(
+                orderFoodArticleDto.getFoodArticleId(),
+                orderFoodArticleDto.getOrderId());
+
+        foodArticleOrder.ifPresent(articleOrder -> foodArticleOrderRepository.delete(articleOrder));
+    }
+
     public OrderFoodArticleDto updateFoodArticleOrder(OrderFoodArticleDto orderFoodArticleDto) {
         Optional<FoodArticleOrder> foodArticleOrder = foodArticleOrderRepository.findFoodArticleOrderByFoodArticleIdAndOrderId(
                 orderFoodArticleDto.getFoodArticleId(),
                 orderFoodArticleDto.getOrderId());
 
-        if (!foodArticleOrder.isEmpty()) {
-            foodArticleOrder.get().setQuantity(orderFoodArticleDto.getQuantity());
-            foodArticleOrderRepository.save(foodArticleOrder.get());
-            return convertToDto(foodArticleOrder.get());
-        }
-        return createFoodArticleOrder(orderFoodArticleDto);
+        if (foodArticleOrder.isEmpty()) return createFoodArticleOrder(orderFoodArticleDto);
+
+        foodArticleOrder.get().setQuantity(orderFoodArticleDto.getQuantity());
+        foodArticleOrderRepository.save(foodArticleOrder.get());
+        return convertToDto(foodArticleOrder.get());
     }
 }

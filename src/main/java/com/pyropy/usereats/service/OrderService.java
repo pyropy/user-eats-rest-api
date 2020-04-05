@@ -61,7 +61,7 @@ public class OrderService {
         order.setUser(user);
         order.setOrderStatus(OrderStatus.OPEN);
         orderRepository.save(order);
-        return updateOrderWithFoodArticle(convertToDto(order), orderFoodArticleDto);
+        return updateOrderWithFoodArticle(convertToDto(order), orderFoodArticleDto, false);
     }
 
     public List<OrderDto> findUserOrders(String username) {
@@ -76,18 +76,25 @@ public class OrderService {
 
     public OrderDto updateOrderArticles(OrderFoodArticleDto orderFoodArticleDto, String username) {
         OrderDto orderDto = findOrderByIdAndUsername(orderFoodArticleDto.getOrderId(), username);
-        return updateOrderWithFoodArticle(orderDto, orderFoodArticleDto);
+        return updateOrderWithFoodArticle(orderDto, orderFoodArticleDto, false);
     }
 
-    private OrderDto updateOrderWithFoodArticle(OrderDto orderDto, OrderFoodArticleDto orderFoodArticleDto) {
+    public OrderDto deleteOrderArticle(OrderFoodArticleDto orderFoodArticleDto, String username) {
+        OrderDto orderDto = findOrderByIdAndUsername(orderFoodArticleDto.getOrderId(), username);
+        return updateOrderWithFoodArticle(orderDto, orderFoodArticleDto, true);
+    }
+
+    private OrderDto updateOrderWithFoodArticle(OrderDto orderDto, OrderFoodArticleDto orderFoodArticleDto, boolean delete) {
         Order order = findEntityById(orderDto.getId());
         orderFoodArticleDto.setOrderId(order.getId()); // double check
-        foodArticleOrderService.updateFoodArticleOrder(orderFoodArticleDto);
+        if (delete) foodArticleOrderService.deleteFoodArticleOrder(orderFoodArticleDto);
+        else foodArticleOrderService.updateFoodArticleOrder(orderFoodArticleDto);
         order.setSubtotal(calculateSubtotal(order));
         order.setTotal(calculateTotal(order));
         orderRepository.save(order);
         return convertToDto(order);
     }
+
 
     public OrderDto updateOrderStatus(OrderDto orderDto, OrderStatus orderStatus, String username) {
         // todo: add sending email of confirmed

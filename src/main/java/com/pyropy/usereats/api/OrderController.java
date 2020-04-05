@@ -32,18 +32,29 @@ public class OrderController {
         return orderService.findUserOrders(authentication.getName());
     }
 
+
+    /* Create new order */
     @PostMapping
     public OrderDto createOrder(Authentication authentication,
                                 @RequestBody OrderFoodArticleDto articles) {
         return orderService.createOrder(articles, authentication.getName());
     }
 
+    /* Update order articles */
     @PutMapping
     public OrderDto updateOrderFoodArticles(Authentication authentication,
                                             @RequestBody OrderFoodArticleDto orderFoodArticleDto) {
         return orderService.updateOrderArticles(orderFoodArticleDto, authentication.getName());
     }
 
+    /* Update order articles */
+    @DeleteMapping
+    public OrderDto deleteOrderFoodArticles(Authentication authentication,
+                                            @RequestBody OrderFoodArticleDto orderFoodArticleDto) {
+        return orderService.deleteOrderArticle(orderFoodArticleDto, authentication.getName());
+    }
+
+    /* Update order status */
     @PutMapping(value = "{status}")
     public OrderDto updateOrderStatus(Authentication authentication,
                                       @RequestBody OrderDto orderDto,
