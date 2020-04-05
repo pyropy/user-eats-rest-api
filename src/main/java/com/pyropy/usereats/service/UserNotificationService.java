@@ -4,5 +4,5 @@ import com.pyropy.usereats.dto.NotificationDto;
 import com.pyropy.usereats.model.User;
 
 public interface UserNotificationService {
-    public void notifyUser(User from, User to, NotificationDto notificationDto);
+    void notifyUser(User from, User to, NotificationDto notificationDto);
 }

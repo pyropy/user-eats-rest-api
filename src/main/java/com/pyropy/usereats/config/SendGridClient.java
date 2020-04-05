@@ -13,6 +13,6 @@ public class SendGridClient {
 
     @Bean
     public SendGrid getSendGrid() {
-        return new SendGrid(sendGridConfig.getSendGridAPIKey());
+        return new SendGrid(sendGridConfig.getApiKey());
     }
 }

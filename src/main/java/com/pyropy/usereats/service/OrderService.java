@@ -2,6 +2,7 @@ package com.pyropy.usereats.service;
 
 import com.pyropy.usereats.dto.OrderFoodArticleDto;
 import com.pyropy.usereats.dto.OrderDto;
+import com.pyropy.usereats.dto.UserDto;
 import com.pyropy.usereats.model.*;
 import com.pyropy.usereats.repository.OrderRepository;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,9 @@ public class OrderService {
 
     @Autowired
     private FoodArticleOrderService foodArticleOrderService;
+
+    @Autowired
+    private SendGridEmailService sendGridEmailService;
 
     /*
      * Converts Order Entity to OrderDto class.
@@ -95,11 +99,16 @@ public class OrderService {
         return convertToDto(order);
     }
 
-
     public OrderDto updateOrderStatus(OrderDto orderDto, OrderStatus orderStatus, String username) {
-        // todo: add sending email of confirmed
+        UserDto userDto = userService.findByUsername(username);
         return orderRepository.findOrderByIdAndUserUsername(orderDto.getId(), username)
                 .map(order -> {
+                    if (order.getOrderStatus() == OrderStatus.CONFIRMED) return convertToDto(order);
+                    if (orderStatus == OrderStatus.CONFIRMED)
+                        sendGridEmailService.notifyRestaurantOwnersConfirmedOrder(order);
+
+                    String deliveryAddress = orderDto.getDeliveryAddress().isEmpty() ? userDto.getAddress() : orderDto.getDeliveryAddress();
+                    order.setDeliveryAddress(deliveryAddress);
                     order.setOrderStatus(orderStatus);
                     orderRepository.save(order);
                     return convertToDto(order);
